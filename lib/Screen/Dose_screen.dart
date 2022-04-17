@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
-import 'main.dart';
+import '../model.dart';
 
 class ScrDose extends StatefulWidget {
   const ScrDose({Key? key}) : super(key: key);
@@ -29,6 +28,7 @@ class _ScrDoseState extends State<ScrDose> {
       } else {
         rate = double.parse(_ctlRate.text);
         showDose();
+        setState(() {});
       }
     });
     _ctlWeight.addListener(() {
@@ -37,6 +37,7 @@ class _ScrDoseState extends State<ScrDose> {
       } else {
         weight = double.parse(_ctlWeight.text);
         showDose();
+        setState(() {});
       }
     });
     _ctlCDose.addListener(() {
@@ -45,6 +46,7 @@ class _ScrDoseState extends State<ScrDose> {
       } else {
         cDose = double.parse(_ctlCDose.text);
         showDose();
+        setState(() {});
       }
     });
     _ctlCVol.addListener(() {
@@ -53,6 +55,7 @@ class _ScrDoseState extends State<ScrDose> {
       } else {
         cVol = double.parse(_ctlCVol.text);
         showDose();
+        setState(() {});
       }
     });
   }
@@ -66,100 +69,6 @@ class _ScrDoseState extends State<ScrDose> {
     _fcNodeWt.dispose();
     _fcNodeCDose.dispose();
     super.dispose();
-  }
-
-  void showDose() {
-    if (rate == null || weight == null || cDose == null || cVol == null) {
-    } else {
-      num ratefactor = 1;
-      switch (valRateType) {
-        case 'cc/min':
-          ratefactor = 60;
-          break;
-        case 'cc/hr':
-          ratefactor = 1;
-          break;
-        case 'cc/day':
-          ratefactor = 1 / 24;
-      }
-      num weightfactor = 1;
-      if (isWeight) {
-        switch (valWeightType) {
-          case 'kg':
-            weightfactor = pow(10, 0);
-            break;
-          case 'gram':
-            weightfactor = pow(10, -3);
-            break;
-          case 'lbs':
-            weightfactor = 0.453597;
-            break;
-        }
-      } else {
-        weight = 1;
-        weightfactor = pow(10, 0);
-      }
-      num cDosefactor = 1;
-      switch (valcDoseType) {
-        case 'ng':
-          cDosefactor = pow(10, -6);
-          break;
-        case 'mcg':
-          cDosefactor = pow(10, -3);
-          break;
-        case 'mg':
-          cDosefactor = pow(10, 0);
-          break;
-        case 'gram':
-          cDosefactor = pow(10, 3);
-          break;
-        case 'unit':
-          cDosefactor = 1;
-      }
-      // Convert concentration volume to cc
-      num cVolfactor = 1;
-      if (valcVolumeType == 'liter') {
-        cVolfactor = pow(10, 3);
-      }
-      num dosefactor = 1;
-      switch (valDoseType) {
-        case 'mcg':
-          dosefactor = pow(10, 0);
-          break;
-        case 'ng':
-          dosefactor = pow(10, 3);
-          break;
-        case 'mg':
-          dosefactor = pow(10, -3);
-          break;
-        case 'gram':
-          dosefactor = pow(10, -6);
-          break;
-        case 'unit':
-          dosefactor = 1;
-          break;
-      }
-      switch (valTimeType) {
-        case 'min':
-          tInf = 1 / 60;
-          break;
-        case 'hr':
-          tInf = 1;
-          break;
-        case 'day':
-          tInf = 24;
-          break;
-      }
-
-      double numResult = 1000 *
-          (rate! * ratefactor) *
-          dosefactor *
-          tInf *
-          ((cDose! * cDosefactor) / (cVol! * cVolfactor)) /
-          (weight! * weightfactor);
-      result = numResult.toStringAsFixed(2);
-      setState(() {});
-    }
   }
 
   @override
@@ -283,10 +192,7 @@ class _ScrDoseState extends State<ScrDose> {
                     ),
                     Text(
                       'Concentration',
-                      style: TextStyle(
-                          color: Colors.blueGrey,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400),
+                      style: TextStyle(color: Colors.blueGrey, fontSize: 16, fontWeight: FontWeight.w400),
                     ),
                   ],
                 ),
@@ -307,8 +213,7 @@ class _ScrDoseState extends State<ScrDose> {
                                 ),
                                 textInputAction: TextInputAction.next,
                                 onFieldSubmitted: (_) {
-                                  FocusScope.of(context)
-                                      .requestFocus(_fcNodeCVol);
+                                  FocusScope.of(context).requestFocus(_fcNodeCVol);
                                 },
                                 focusNode: _fcNodeCDose,
                               ),
@@ -385,9 +290,7 @@ class _ScrDoseState extends State<ScrDose> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  (result == null || result.length < 1)
-                      ? 'Dose : '
-                      : 'Dose : $result ',
+                  (result == null || result.length < 1) ? 'Dose : ' : 'Dose : $result ',
                   style: const TextStyle(fontSize: 16),
                 ),
                 DropdownButton(
@@ -447,19 +350,7 @@ class _ScrDoseState extends State<ScrDose> {
           ElevatedButton.icon(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              dose = null;
-              valDoseType = 'mcg';
-              valTimeType = 'min';
-              isWeight = true;
-              weight = null;
-              valWeightType = 'kg';
-              cDose = null;
-              valcDoseType = 'mg';
-              cVol = null;
-              valcVolumeType = 'cc';
-              valRateType = 'cc/hr';
-              tInf = 1.0;
-              result = '';
+              initAll();
               _ctlRate.clear();
               _ctlWeight.clear();
               _ctlCDose.clear();

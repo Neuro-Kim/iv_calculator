@@ -1,33 +1,9 @@
 import 'package:flutter/material.dart';
-import 'scrRate.dart';
-import 'scrDose.dart';
-import 'scrConc.dart';
-
-double? dose;
-double? rate;
-bool isWeight = true;
-double? weight;
-double? cVol;
-double? cDose;
-double tInf = 1.0;
-
-const doseType = ['ng', 'mcg', 'mg', 'gram', 'unit'];
-dynamic valDoseType = 'mcg';
-dynamic valcDoseType = 'mg';
-
-const volumeType = ['cc', 'liter'];
-dynamic valcVolumeType = 'cc';
-
-const weightType = ['gram', 'kg', 'lbs'];
-dynamic valWeightType = 'kg';
-
-const timeType = ['min', 'hr', 'day'];
-dynamic valTimeType = 'min';
-
-const rateType = ['cc/min', 'cc/hr', 'cc/day'];
-dynamic valRateType = 'cc/hr';
-
-late dynamic result = '';
+import 'package:hive/hive.dart';
+import 'Screen/Rate_screen.dart';
+import 'Screen/Dose_screen.dart';
+import 'Screen/Conc_screen.dart';
+import 'model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -63,6 +39,8 @@ class _MyHomePageState extends State<MyHomePage> {
     const ScrDose(),
     const ScrConc(),
   ];
+  final TextEditingController _ctlChip = TextEditingController();
+  late String chipTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +79,63 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.waves),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        backgroundColor: Colors.blue,
+        onPressed: () async {
+          List<String> varList = [];
+          varList.add(dose.toString());
+          varList.add(rate.toString());
+          varList.add(isWeight ? "1" : "0");
+          varList.add(weight.toString());
+          varList.add(cVol.toString());
+          varList.add(cDose.toString());
+          varList.add(tInf.toString());
+          varList.add(valDoseType.toString());
+          varList.add(valcDoseType.toString());
+          varList.add(valcVolumeType.toString());
+          varList.add(valWeightType.toString());
+          varList.add(valTimeType.toString());
+          varList.add(valRateType.toString());
+
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Enter preset title.'),
+                content: TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      chipTitle = value;
+                    });
+                  },
+                  controller: _ctlChip,
+                ),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        Navigator.pop(context);
+                      });
+                    },
+                    child: const Text('Cancel'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      _ctlChip.clear();
+                      setState(() {
+                        Navigator.pop(context);
+                      });
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        }, // Add Tag, Add Drug의 2가지
       ),
     );
   }

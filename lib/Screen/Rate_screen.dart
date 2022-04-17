@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
-import 'main.dart';
+import '../model.dart';
 
-class ScrConc extends StatefulWidget {
-  const ScrConc({Key? key}) : super(key: key);
+class ScrIvRate extends StatefulWidget {
+  const ScrIvRate({Key? key}) : super(key: key);
 
   @override
-  _ScrConcState createState() => _ScrConcState();
+  _ScrIvRateState createState() => _ScrIvRateState();
 }
 
-class _ScrConcState extends State<ScrConc> {
+class _ScrIvRateState extends State<ScrIvRate> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController _ctlDose = TextEditingController();
-  final TextEditingController _ctlRate = TextEditingController();
   final TextEditingController _ctlWeight = TextEditingController();
+  final TextEditingController _ctlCDose = TextEditingController();
   final TextEditingController _ctlCVol = TextEditingController();
-  final FocusNode _fcNodeRate = FocusNode();
   final FocusNode _fcNodeWt = FocusNode();
+  final FocusNode _fcNodeCDose = FocusNode();
   final FocusNode _fcNodeCVol = FocusNode();
 
   @override
@@ -28,15 +27,8 @@ class _ScrConcState extends State<ScrConc> {
         dose = null;
       } else {
         dose = double.parse(_ctlDose.text);
-        showConc();
-      }
-    });
-    _ctlRate.addListener(() {
-      if (_ctlRate.text == '') {
-        rate = null;
-      } else {
-        rate = double.parse(_ctlRate.text);
-        showConc();
+        showRate();
+        setState(() {});
       }
     });
     _ctlWeight.addListener(() {
@@ -44,7 +36,17 @@ class _ScrConcState extends State<ScrConc> {
         weight = null;
       } else {
         weight = double.parse(_ctlWeight.text);
-        showConc();
+        showRate();
+        setState(() {});
+      }
+    });
+    _ctlCDose.addListener(() {
+      if (_ctlCDose.text == '') {
+        cDose = null;
+      } else {
+        cDose = double.parse(_ctlCDose.text);
+        showRate();
+        setState(() {});
       }
     });
     _ctlCVol.addListener(() {
@@ -52,7 +54,8 @@ class _ScrConcState extends State<ScrConc> {
         cVol = null;
       } else {
         cVol = double.parse(_ctlCVol.text);
-        showConc();
+        showRate();
+        setState(() {});
       }
     });
   }
@@ -60,112 +63,13 @@ class _ScrConcState extends State<ScrConc> {
   @override
   void dispose() {
     _ctlDose.dispose();
-    _ctlRate.dispose();
     _ctlWeight.dispose();
+    _ctlCDose.dispose();
     _ctlCVol.dispose();
     _fcNodeWt.dispose();
-    _fcNodeRate.dispose();
+    _fcNodeCDose.dispose();
     _fcNodeCVol.dispose();
     super.dispose();
-  }
-
-  void showConc() {
-    if (dose == null || rate == null || weight == null || cVol == null) {
-    } else {
-      num dosefactor = 1;
-      switch (valDoseType) {
-        case 'ng':
-          dosefactor = pow(10, -3);
-          break;
-        case 'mcg':
-          dosefactor = pow(10, 0);
-          break;
-        case 'mg':
-          dosefactor = pow(10, 3);
-          break;
-        case 'gram':
-          dosefactor = pow(10, 6);
-          break;
-        case 'unit':
-          dosefactor = 1;
-          break;
-      }
-      num cDosefactor = 1;
-      switch (valcDoseType) {
-        case 'ng':
-          cDosefactor = pow(10, 6);
-          break;
-        case 'mcg':
-          cDosefactor = pow(10, 3);
-          break;
-        case 'mg':
-          cDosefactor = pow(10, 0);
-          break;
-        case 'gram':
-          cDosefactor = pow(10, -3);
-          break;
-        case 'unit':
-          cDosefactor = 1;
-          break;
-      }
-      switch (valTimeType) {
-        case 'min':
-          tInf = 1;
-          break;
-        case 'hr':
-          tInf = 60;
-          break;
-        case 'day':
-          tInf = 60 * 24;
-          break;
-      }
-
-      num ratefactor = 1;
-      switch (valRateType) {
-        case 'cc/min':
-          ratefactor = 60;
-          break;
-        case 'cc/hr':
-          ratefactor = 1;
-          break;
-        case 'cc/day':
-          ratefactor = 1 / 24;
-      }
-      num weightfactor = 1;
-      if (isWeight) {
-        switch (valWeightType) {
-          case 'kg':
-            weightfactor = pow(10, 0);
-            break;
-          case 'gram':
-            weightfactor = pow(10, -3);
-            break;
-          case 'lbs':
-            weightfactor = 0.453597;
-            break;
-        }
-      } else {
-        weight = 1;
-        weightfactor = pow(10, 0);
-      }
-
-      // Convert concentration volume to cc
-      num cVolfactor = 1;
-      if (valcVolumeType == 'liter') {
-        cVolfactor = pow(10, 3);
-      }
-
-      double numResult = (dose! * dosefactor) *
-          (weight! * weightfactor) /
-          (rate! * ratefactor) *
-          (cVol! * cVolfactor) /
-          tInf *
-          cDosefactor *
-          60 /
-          1000;
-      result = numResult.toStringAsFixed(2);
-      setState(() {});
-    }
   }
 
   @override
@@ -182,31 +86,30 @@ class _ScrConcState extends State<ScrConc> {
                   controller: _ctlDose,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
-                    hintText: 'Ordered dose',
+                    hintText: 'Dose rate',
                     labelText: 'Dose',
                   ),
                   textInputAction: TextInputAction.next,
                   onFieldSubmitted: (_) {
-                    FocusScope.of(context).requestFocus(_fcNodeRate);
+                    FocusScope.of(context).requestFocus(_fcNodeWt);
                   },
                 ),
               ),
               DropdownButton(
-                value: valDoseType,
-                items: doseType.map((valueItem) {
-                  return DropdownMenuItem(
-                    value: valueItem,
-                    child: Text(valueItem),
-                  );
-                }).toList(),
-                onChanged: (newValue) {
-                  valDoseType = newValue;
-                  showConc();
-                  setState(() {});
-                },
-                icon: const Icon(Icons.keyboard_arrow_down),
-                underline: const SizedBox(),
-              ),
+                  value: valDoseType,
+                  icon: const Icon(Icons.keyboard_arrow_down),
+                  underline: const SizedBox(),
+                  items: doseType.map((valueItem) {
+                    return DropdownMenuItem(
+                      value: valueItem,
+                      child: Text(valueItem),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
+                    valDoseType = newValue;
+                    showRate();
+                    setState(() {});
+                  }),
               isWeight
                   ? const Text(
                       ' / kg / ',
@@ -236,43 +139,7 @@ class _ScrConcState extends State<ScrConc> {
                 }).toList(),
                 onChanged: (newValue) {
                   valTimeType = newValue;
-                  showConc();
-                  setState(() {});
-                },
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              const SizedBox(width: 100),
-              Expanded(
-                child: TextFormField(
-                  controller: _ctlRate,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    hintText: 'Infusion rate',
-                    labelText: 'IV Rate',
-                  ),
-                  textInputAction: TextInputAction.next,
-                  onFieldSubmitted: (_) {
-                    FocusScope.of(context).requestFocus(_fcNodeWt);
-                  },
-                  focusNode: _fcNodeRate,
-                ),
-              ),
-              DropdownButton(
-                underline: const SizedBox(),
-                value: valRateType,
-                icon: const Icon(Icons.keyboard_arrow_down),
-                items: rateType.map((valueItem) {
-                  return DropdownMenuItem(
-                    value: valueItem,
-                    child: Text(valueItem),
-                  );
-                }).toList(),
-                onChanged: (newValue) {
-                  valRateType = newValue;
-                  showConc();
+                  showRate();
                   setState(() {});
                 },
               ),
@@ -295,10 +162,8 @@ class _ScrConcState extends State<ScrConc> {
                   } else {
                     weight = 1;
                   }
-                  showConc();
-                  setState(
-                    () {},
-                  );
+                  showRate();
+                  setState(() {});
                 },
               ),
               const SizedBox(width: 20),
@@ -313,7 +178,7 @@ class _ScrConcState extends State<ScrConc> {
                   ),
                   textInputAction: TextInputAction.next,
                   onFieldSubmitted: (_) {
-                    FocusScope.of(context).requestFocus(_fcNodeCVol);
+                    FocusScope.of(context).requestFocus(_fcNodeCDose);
                   },
                   focusNode: _fcNodeWt,
                 ),
@@ -330,7 +195,7 @@ class _ScrConcState extends State<ScrConc> {
                 }).toList(),
                 onChanged: (newValue) {
                   valWeightType = newValue;
-                  showConc();
+                  showRate();
                   setState(() {});
                 },
               ),
@@ -355,11 +220,8 @@ class _ScrConcState extends State<ScrConc> {
                       height: 70,
                     ),
                     Text(
-                      ' Concentration',
-                      style: TextStyle(
-                          color: Colors.blueGrey,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400),
+                      'Concentration',
+                      style: TextStyle(color: Colors.blueGrey, fontSize: 16, fontWeight: FontWeight.w400),
                     ),
                   ],
                 ),
@@ -368,41 +230,40 @@ class _ScrConcState extends State<ScrConc> {
                     padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
                     child: Column(
                       children: [
-                        Container(
-                          decoration: const BoxDecoration(
-                            color: Color(0x142196F3),
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  (result == null || result.length < 1)
-                                      ? 'Amount : '
-                                      : 'Amount : $result ',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                  ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _ctlCDose,
+                                keyboardType: TextInputType.number,
+                                decoration: const InputDecoration(
+                                  hintText: 'Medication amount',
+                                  labelText: 'Amount',
                                 ),
+                                textInputAction: TextInputAction.next,
+                                onFieldSubmitted: (_) {
+                                  FocusScope.of(context).requestFocus(_fcNodeCVol);
+                                },
+                                focusNode: _fcNodeCDose,
                               ),
-                              const SizedBox(width: 30),
-                              DropdownButton(
-                                  underline: const SizedBox(),
-                                  value: valcDoseType,
-                                  icon: const Icon(Icons.keyboard_arrow_down),
-                                  items: doseType.map((valueItem) {
-                                    return DropdownMenuItem(
-                                      value: valueItem,
-                                      child: Text(valueItem),
-                                    );
-                                  }).toList(),
-                                  onChanged: (newValue) {
-                                    valcDoseType = newValue;
-                                    showConc();
-                                    setState(() {});
-                                  }),
-                            ],
-                          ),
+                            ),
+                            const SizedBox(width: 15),
+                            DropdownButton(
+                                underline: const SizedBox(),
+                                value: valcDoseType,
+                                icon: const Icon(Icons.keyboard_arrow_down),
+                                items: doseType.map((valueItem) {
+                                  return DropdownMenuItem(
+                                    value: valueItem,
+                                    child: Text(valueItem),
+                                  );
+                                }).toList(),
+                                onChanged: (newValue) {
+                                  valcDoseType = newValue;
+                                  showRate();
+                                  setState(() {});
+                                }),
+                          ],
                         ),
                         Row(
                           children: [
@@ -434,7 +295,7 @@ class _ScrConcState extends State<ScrConc> {
                                 }).toList(),
                                 onChanged: (newValue) {
                                   valcVolumeType = newValue;
-                                  showConc();
+                                  showRate();
                                   setState(() {});
                                 }),
                           ],
@@ -446,26 +307,49 @@ class _ScrConcState extends State<ScrConc> {
               ],
             ),
           ),
+          const SizedBox(height: 10),
+          Container(
+            height: 60,
+            padding: const EdgeInsets.fromLTRB(15, 12, 15, 10),
+            decoration: const BoxDecoration(
+              color: Color(0x142196F3),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  (result == null || result.length < 1) ? 'Infusion rate : ' : 'Infusion rate : $result ',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                DropdownButton(
+                  underline: const SizedBox(),
+                  style: const TextStyle(fontSize: 16, color: Colors.black),
+                  value: valRateType,
+                  icon: const Icon(Icons.keyboard_arrow_down),
+                  items: rateType.map((valueItem) {
+                    return DropdownMenuItem(
+                      value: valueItem,
+                      child: Text(valueItem),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
+                    valRateType = newValue;
+                    showRate();
+                    setState(() {});
+                  },
+                ),
+              ],
+            ),
+          ),
           const SizedBox(height: 5),
           ElevatedButton.icon(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              dose = null;
-              valDoseType = 'mcg';
-              valTimeType = 'min';
-              isWeight = true;
-              weight = null;
-              valWeightType = 'kg';
-              cDose = null;
-              valcDoseType = 'mg';
-              cVol = null;
-              valcVolumeType = 'cc';
-              valRateType = 'cc/hr';
-              tInf = 1.0;
-              result = '';
+              initAll();
               _ctlDose.clear();
               _ctlWeight.clear();
-              _ctlRate.clear();
+              _ctlCDose.clear();
               _ctlCVol.clear();
               setState(() {});
             },
@@ -476,6 +360,7 @@ class _ScrConcState extends State<ScrConc> {
                   borderRadius: BorderRadius.circular(20),
                 )),
           ),
+          const SizedBox(height: 10),
         ],
       ),
     );
