@@ -349,11 +349,7 @@ class _ScrConcState extends State<ScrConc> {
           ElevatedButton.icon(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              initAll();
-              _ctlDose.clear();
-              _ctlWeight.clear();
-              _ctlRate.clear();
-              _ctlCVol.clear();
+              initAll(_ctlDose, _ctlWeight, _ctlRate, _ctlCVol);
               setState(() {});
             },
             label: const Text('Refresh', style: TextStyle(fontSize: 16)),
@@ -363,6 +359,8 @@ class _ScrConcState extends State<ScrConc> {
                   borderRadius: BorderRadius.circular(20),
                 )),
           ),
+          const SizedBox(height: 10),
+
         ],
       ),
     );

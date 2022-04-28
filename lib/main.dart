@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'Screen/Rate_screen.dart';
 import 'Screen/Dose_screen.dart';
 import 'Screen/Conc_screen.dart';
 import 'model.dart';
 
-void main() {
+void main() async {
+  //final prefs = await SharedPreferences.getInstance();
+  getAllkeys();
   runApp(const MyApp());
 }
 
@@ -15,6 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'IV calculator',
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
@@ -35,12 +38,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int selectedIndex = 0;
   final List<Widget> _children = <Widget>[
-    const ScrIvRate(),
-    const ScrDose(),
-    const ScrConc(),
+    ScrIvRate(key: ObjectKey(getAllkeys())),
+    ScrDose(key: UniqueKey()),
+    ScrConc(key: UniqueKey()),
   ];
   final TextEditingController _ctlChip = TextEditingController();
-  late String chipTitle;
+  late String presetTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -60,9 +63,9 @@ class _MyHomePageState extends State<MyHomePage> {
         unselectedFontSize: 14,
         currentIndex: selectedIndex,
         onTap: (int index) {
+          result = '';
           setState(() {
             selectedIndex = index;
-            result = '';
           });
         },
         items: const [
@@ -83,22 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         backgroundColor: Colors.blue,
-        onPressed: () async {
-          List<String> varList = [];
-          varList.add(dose.toString());
-          varList.add(rate.toString());
-          varList.add(isWeight ? "1" : "0");
-          varList.add(weight.toString());
-          varList.add(cVol.toString());
-          varList.add(cDose.toString());
-          varList.add(tInf.toString());
-          varList.add(valDoseType.toString());
-          varList.add(valcDoseType.toString());
-          varList.add(valcVolumeType.toString());
-          varList.add(valWeightType.toString());
-          varList.add(valTimeType.toString());
-          varList.add(valRateType.toString());
-
+        onPressed: () {
           showDialog(
             context: context,
             barrierDismissible: false,
@@ -108,28 +96,50 @@ class _MyHomePageState extends State<MyHomePage> {
                 content: TextField(
                   onChanged: (value) {
                     setState(() {
-                      chipTitle = value;
+                      presetTitle = value;
                     });
                   },
                   controller: _ctlChip,
                 ),
                 actions: [
-                  ElevatedButton(
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.cancel_outlined),
+                    style: ElevatedButton.styleFrom(primary: Colors.blue),
                     onPressed: () {
-                      setState(() {
-                        Navigator.pop(context);
-                      });
+                      Navigator.pop(context);
                     },
-                    child: const Text('Cancel'),
+                    label: const Text('Cancel'),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.check_circle_outline),
+                    style: ElevatedButton.styleFrom(primary: Colors.blue),
+                    onPressed: () async {
+                      final prefs = await SharedPreferences.getInstance();
+                      List<String>? varList = [];
+                      varList.add(dose.toString());
+                      varList.add(rate.toString());
+                      varList.add(isWeight ? "1" : "0");
+                      varList.add(weight.toString());
+                      varList.add(cVol.toString());
+                      varList.add(cDose.toString());
+                      varList.add(tInf.toString());
+                      varList.add(valDoseType.toString());
+                      varList.add(valcDoseType.toString());
+                      varList.add(valcVolumeType.toString());
+                      varList.add(valWeightType.toString());
+                      varList.add(valTimeType.toString());
+                      varList.add(valRateType.toString());
+
+                      await prefs.setStringList(presetTitle, varList);
                       _ctlChip.clear();
+
+                      Navigator.pop(context);
+
                       setState(() {
-                        Navigator.pop(context);
+
                       });
                     },
-                    child: const Text('OK'),
+                    label: const Text('OK'),
                   ),
                 ],
               );

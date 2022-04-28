@@ -1,4 +1,8 @@
+//import 'dart:html';
 import 'dart:math';
+
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 double? dose;
 double? rate;
@@ -25,7 +29,6 @@ const rateType = ['cc/min', 'cc/hr', 'cc/day'];
 dynamic valRateType = 'cc/hr';
 
 late dynamic result = '';
-
 
 void showConc() {
   if (dose == null || rate == null || weight == null || cVol == null) {
@@ -311,11 +314,10 @@ void showRate() {
         ratefactor /
         (cDose! * cDosefactor);
     result = numResult.toStringAsFixed(2);
-
   }
 }
 
-void initAll() {
+void initAll(TextEditingController c1, c2, c3, c4) {
   dose = null;
   valDoseType = 'mcg';
   valTimeType = 'min';
@@ -329,5 +331,43 @@ void initAll() {
   valRateType = 'cc/hr';
   tInf = 1.0;
   result = '';
-
+  c1.clear();
+  c2.clear();
+  c3.clear();
+  c4.clear();
 }
+
+class PresetItem {
+  String? presetName;
+  List<String>? varList;
+
+  PresetItem(this.presetName, this.varList);
+
+  void savePreset(PresetItem presetItem) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(presetItem.presetName!, presetItem.varList!);
+  }
+
+  void loadPreset(PresetItem presetItem) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.getStringList(presetItem.presetName!);
+  }
+}
+
+Future<List<String>> getAllkeys() async {
+  final prefs = await SharedPreferences.getInstance();
+  // prefs.reload();
+  // final keys = prefs.getKeys();
+  // final prefsMap = <String, dynamic>{};
+  // for (String key in keys) {
+  //   prefsMap[key] = prefs.get(key);
+  // }
+  return prefs.getKeys().toList();
+}
+
+Future<List> getVarList(key) async {
+  final prefs = await SharedPreferences.getInstance();
+  final varList = prefs.getStringList(key) ?? [];
+  return varList;
+}
+

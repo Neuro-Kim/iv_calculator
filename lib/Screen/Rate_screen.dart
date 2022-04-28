@@ -346,11 +346,7 @@ class _ScrIvRateState extends State<ScrIvRate> {
           ElevatedButton.icon(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              initAll();
-              _ctlDose.clear();
-              _ctlWeight.clear();
-              _ctlCDose.clear();
-              _ctlCVol.clear();
+              initAll(_ctlDose, _ctlWeight, _ctlCDose, _ctlCVol);
               setState(() {});
             },
             label: const Text('Refresh', style: TextStyle(fontSize: 16)),
@@ -361,6 +357,55 @@ class _ScrIvRateState extends State<ScrIvRate> {
                 )),
           ),
           const SizedBox(height: 10),
+          FutureBuilder<List>(
+            future: getAllkeys(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                // print (snapshot.data);
+                return Wrap(
+                  spacing: 10.0,
+                  children: [
+                    for (var preset in snapshot.data!)
+                      InputChip(
+                        labelPadding: const EdgeInsets.all(2.0),
+                        label: Text(
+                          preset,
+                          style: const TextStyle(color: Colors.black),
+                        ),
+                        padding: const EdgeInsets.all(8.0),
+                        //avatar: const Icon(Icons.check_circle_outlined, color: Colors.black),
+                        selected: false,
+                        onSelected: (bool value) async {
+                          List varList = await getVarList(preset);
+                          setState(() {
+                            bool isSelected = value;
+                            dose = double.tryParse(varList[0]);
+                            _ctlDose.text = varList[0] ?? '';
+                            rate = double.tryParse(varList[1]);
+                            isWeight = (varList[2] == "1") ? true : false;
+                            weight = double.tryParse(varList[3]);
+                            _ctlWeight.text = varList[3] ?? '';
+                            cVol = double.tryParse(varList[4]);
+                            _ctlCVol.text = varList[4] ?? '';
+                            cDose = double.tryParse(varList[5]);
+                            _ctlCDose.text = varList[5] ?? '';
+                            tInf = varList[6];
+                            valDoseType = varList[7];
+                            valcDoseType = varList[8];
+                            valcVolumeType = varList[9];
+                            valWeightType = varList[10];
+                            valTimeType = varList[11];
+                            valRateType = varList[12];
+                          });
+                        },
+                      ),
+                  ],
+                );
+              } else {
+                return Container();
+              }
+            },
+          ),
         ],
       ),
     );

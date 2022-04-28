@@ -350,11 +350,7 @@ class _ScrDoseState extends State<ScrDose> {
           ElevatedButton.icon(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              initAll();
-              _ctlRate.clear();
-              _ctlWeight.clear();
-              _ctlCDose.clear();
-              _ctlCVol.clear();
+              initAll(_ctlRate, _ctlWeight, _ctlCDose, _ctlCVol);
               setState(() {});
             },
             label: const Text('Refresh', style: TextStyle(fontSize: 16)),
@@ -364,6 +360,8 @@ class _ScrDoseState extends State<ScrDose> {
                   borderRadius: BorderRadius.circular(20),
                 )),
           ),
+          const SizedBox(height: 10),
+
         ],
       ),
     );
