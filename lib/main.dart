@@ -38,9 +38,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int selectedIndex = 0;
   final List<Widget> _children = <Widget>[
-    ScrIvRate(key: ObjectKey(getAllkeys())),
-    ScrDose(key: UniqueKey()),
-    ScrConc(key: UniqueKey()),
+    const ScrIvRate(),
+    const ScrDose(),
+    const ScrConc(),
   ];
   final TextEditingController _ctlChip = TextEditingController();
   late String presetTitle;
@@ -136,6 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       Navigator.pop(context);
 
                       setState(() {
+                        ChipModified.value++ ;
 
                       });
                     },

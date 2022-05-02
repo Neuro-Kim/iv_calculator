@@ -364,10 +364,14 @@ Future<List<String>> getAllkeys() async {
   // }
   return prefs.getKeys().toList();
 }
+var allKeys = getAllkeys();
 
 Future<List> getVarList(key) async {
   final prefs = await SharedPreferences.getInstance();
   final varList = prefs.getStringList(key) ?? [];
   return varList;
 }
+
+ValueNotifier<int> ChipModified = ValueNotifier<int>(0);
+
 

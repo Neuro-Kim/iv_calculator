@@ -23,37 +23,37 @@ class _ScrIvRateState extends State<ScrIvRate> {
     super.initState();
 
     _ctlDose.addListener(() {
-      if (_ctlDose.text == '') {
+      if (_ctlDose.text == '' || _ctlDose.text == 'null') {
         dose = null;
       } else {
-        dose = double.parse(_ctlDose.text);
+        dose = double.tryParse(_ctlDose.text);
         showRate();
         setState(() {});
       }
     });
     _ctlWeight.addListener(() {
-      if (_ctlWeight.text == '') {
+      if (_ctlWeight.text == '' || _ctlWeight.text == 'null') {
         weight = null;
       } else {
-        weight = double.parse(_ctlWeight.text);
+        weight = double.tryParse(_ctlWeight.text);
         showRate();
         setState(() {});
       }
     });
     _ctlCDose.addListener(() {
-      if (_ctlCDose.text == '') {
+      if (_ctlCDose.text == '' || _ctlCDose.text == 'null') {
         cDose = null;
       } else {
-        cDose = double.parse(_ctlCDose.text);
+        cDose = double.tryParse(_ctlCDose.text);
         showRate();
         setState(() {});
       }
     });
     _ctlCVol.addListener(() {
-      if (_ctlCVol.text == '') {
+      if (_ctlCVol.text == '' || _ctlCVol.text == 'null') {
         cVol = null;
       } else {
-        cVol = double.parse(_ctlCVol.text);
+        cVol = double.tryParse(_ctlCVol.text);
         showRate();
         setState(() {});
       }
@@ -357,55 +357,58 @@ class _ScrIvRateState extends State<ScrIvRate> {
                 )),
           ),
           const SizedBox(height: 10),
-          FutureBuilder<List>(
-            future: getAllkeys(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                // print (snapshot.data);
-                return Wrap(
-                  spacing: 10.0,
-                  children: [
-                    for (var preset in snapshot.data!)
-                      InputChip(
-                        labelPadding: const EdgeInsets.all(2.0),
-                        label: Text(
-                          preset,
-                          style: const TextStyle(color: Colors.black),
-                        ),
-                        padding: const EdgeInsets.all(8.0),
-                        //avatar: const Icon(Icons.check_circle_outlined, color: Colors.black),
-                        selected: false,
-                        onSelected: (bool value) async {
-                          List varList = await getVarList(preset);
-                          setState(() {
-                            bool isSelected = value;
-                            dose = double.tryParse(varList[0]);
-                            _ctlDose.text = varList[0] ?? '';
-                            rate = double.tryParse(varList[1]);
-                            isWeight = (varList[2] == "1") ? true : false;
-                            weight = double.tryParse(varList[3]);
-                            _ctlWeight.text = varList[3] ?? '';
-                            cVol = double.tryParse(varList[4]);
-                            _ctlCVol.text = varList[4] ?? '';
-                            cDose = double.tryParse(varList[5]);
-                            _ctlCDose.text = varList[5] ?? '';
-                            tInf = varList[6];
-                            valDoseType = varList[7];
-                            valcDoseType = varList[8];
-                            valcVolumeType = varList[9];
-                            valWeightType = varList[10];
-                            valTimeType = varList[11];
-                            valRateType = varList[12];
-                          });
-                        },
-                      ),
-                  ],
+          ValueListenableBuilder(
+              valueListenable: ChipModified,
+              builder: (context, value, _) {
+                return FutureBuilder<List>(
+                  future: getAllkeys(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      print(snapshot.data);
+                      return Wrap(
+                        spacing: 10.0,
+                        children: [
+                          for (var preset in snapshot.data!)
+                            InputChip(
+                              labelPadding: const EdgeInsets.all(2.0),
+                              label: Text(
+                                preset,
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                              padding: const EdgeInsets.all(8.0),
+                              selectedColor: Colors.blue,
+                              selected: false,
+                              onSelected: (bool selected) async {
+                                 List varList = await getVarList(preset);
+                                 setState(() {
+                                   dose = double.tryParse(varList[0]);
+                                   _ctlDose.text = varList[0];
+                                   rate = double.tryParse(varList[1]);
+                                   isWeight = (varList[2] == "1") ? true : false;
+                                   weight = double.tryParse(varList[3]);
+                                   _ctlWeight.text = varList[3];
+                                   cVol = double.tryParse(varList[4]);
+                                   _ctlCVol.text = varList[4];
+                                   cDose = double.tryParse(varList[5]);
+                                   _ctlCDose.text = varList[5];
+                                   tInf = varList[6];
+                                   valDoseType = varList[7];
+                                   valcDoseType = varList[8];
+                                   valcVolumeType = varList[9];
+                                   valWeightType = varList[10];
+                                   valTimeType = varList[11];
+                                   valRateType = varList[12];
+                                });
+                              },
+                            ),
+                        ],
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
                 );
-              } else {
-                return Container();
-              }
-            },
-          ),
+              }),
         ],
       ),
     );
