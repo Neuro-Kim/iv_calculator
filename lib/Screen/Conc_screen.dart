@@ -402,7 +402,6 @@ class _ScrConcState extends State<ScrConc> {
                                   valWeightType = varList[10];
                                   valTimeType = varList[11];
                                   valRateType = varList[12];
-                                  print ('chip : $varList');
                                 });
                               },
                               onDeleted: () async {

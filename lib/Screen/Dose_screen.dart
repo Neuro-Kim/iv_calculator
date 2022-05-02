@@ -402,7 +402,6 @@ class _ScrDoseState extends State<ScrDose> {
                                   valWeightType = varList[10];
                                   valTimeType = varList[11];
                                   valRateType = varList[12];
-                                  print ('chip : $varList');
                                 });
                               },
                               onDeleted: () async {
