@@ -5,6 +5,7 @@ import 'Screen/Dose_screen.dart';
 import 'Screen/Conc_screen.dart';
 import 'model.dart';
 
+
 void main() async {
   //final prefs = await SharedPreferences.getInstance();
   getAllkeys();
@@ -116,27 +117,28 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () async {
                       final prefs = await SharedPreferences.getInstance();
                       List<String>? varList = [];
-                      varList.add(dose.toString());
-                      varList.add(rate.toString());
-                      varList.add(isWeight ? "1" : "0");
-                      varList.add(weight.toString());
-                      varList.add(cVol.toString());
-                      varList.add(cDose.toString());
-                      varList.add(tInf.toString());
-                      varList.add(valDoseType.toString());
-                      varList.add(valcDoseType.toString());
-                      varList.add(valcVolumeType.toString());
-                      varList.add(valWeightType.toString());
-                      varList.add(valTimeType.toString());
-                      varList.add(valRateType.toString());
+                      varList.add(dose.toString());//0
+                      varList.add(rate.toString());//1
+                      varList.add(isWeight ? "1" : "0");//2
+                      varList.add(weight.toString());//3
+                      varList.add(cVol.toString());//4
+                      varList.add(cDose.toString());//5
+                      varList.add(tInf.toString());//6
+                      varList.add(valDoseType.toString());//7
+                      varList.add(valcDoseType.toString());//8
+                      varList.add(valcVolumeType.toString());//9
+                      varList.add(valWeightType.toString());//10
+                      varList.add(valTimeType.toString());//11
+                      varList.add(valRateType.toString());//12
 
                       await prefs.setStringList(presetTitle, varList);
+                      print ('FAB : $varList');
                       _ctlChip.clear();
 
                       Navigator.pop(context);
 
                       setState(() {
-                        ChipModified.value++ ;
+                        chipModified.value++ ;
 
                       });
                     },

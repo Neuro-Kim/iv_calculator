@@ -1,6 +1,5 @@
 //import 'dart:html';
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,7 +9,7 @@ bool isWeight = true;
 double? weight;
 double? cVol;
 double? cDose;
-double tInf = 1.0;
+double? tInf = 1.0;
 
 const doseType = ['ng', 'mcg', 'mg', 'gram', 'unit'];
 dynamic valDoseType = 'mcg';
@@ -120,7 +119,7 @@ void showConc() {
         (weight! * weightfactor) /
         (rate! * ratefactor) *
         (cVol! * cVolfactor) /
-        tInf *
+        tInf! *
         cDosefactor *
         60 /
         1000;
@@ -130,6 +129,7 @@ void showConc() {
 
 void showDose() {
   if (rate == null || weight == null || cDose == null || cVol == null) {
+    
   } else {
     num ratefactor = 1;
     switch (valRateType) {
@@ -214,7 +214,7 @@ void showDose() {
     double numResult = 1000 *
         (rate! * ratefactor) *
         dosefactor *
-        tInf *
+        tInf! *
         ((cDose! * cDosefactor) / (cVol! * cVolfactor)) /
         (weight! * weightfactor);
     result = numResult.toStringAsFixed(2);
@@ -309,7 +309,7 @@ void showRate() {
 
     double numResult = (dose! * dosefactor) *
         (weight! * weightfactor) *
-        tInf *
+        tInf! *
         (cVol! * cVolfactor) *
         ratefactor /
         (cDose! * cDosefactor);
@@ -372,6 +372,6 @@ Future<List> getVarList(key) async {
   return varList;
 }
 
-ValueNotifier<int> ChipModified = ValueNotifier<int>(0);
+ValueNotifier<int> chipModified = ValueNotifier<int>(0);
 
 

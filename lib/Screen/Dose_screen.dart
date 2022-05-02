@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../model.dart';
 
 class ScrDose extends StatefulWidget {
@@ -23,7 +24,7 @@ class _ScrDoseState extends State<ScrDose> {
     super.initState();
 
     _ctlRate.addListener(() {
-      if (_ctlRate.text == '') {
+      if (_ctlRate.text == '' || _ctlRate.text == 'null') {
         rate = null;
       } else {
         rate = double.parse(_ctlRate.text);
@@ -32,7 +33,7 @@ class _ScrDoseState extends State<ScrDose> {
       }
     });
     _ctlWeight.addListener(() {
-      if (_ctlWeight.text == '') {
+      if (_ctlWeight.text == '' || _ctlWeight.text == 'null') {
         weight = null;
       } else {
         weight = double.parse(_ctlWeight.text);
@@ -41,7 +42,7 @@ class _ScrDoseState extends State<ScrDose> {
       }
     });
     _ctlCDose.addListener(() {
-      if (_ctlCDose.text == '') {
+      if (_ctlCDose.text == '' || _ctlCDose.text == 'null') {
         cDose = null;
       } else {
         cDose = double.parse(_ctlCDose.text);
@@ -50,7 +51,7 @@ class _ScrDoseState extends State<ScrDose> {
       }
     });
     _ctlCVol.addListener(() {
-      if (_ctlCVol.text == '') {
+      if (_ctlCVol.text == '' || _ctlCVol.text == 'null') {
         cVol = null;
       } else {
         cVol = double.parse(_ctlCVol.text);
@@ -361,7 +362,65 @@ class _ScrDoseState extends State<ScrDose> {
                 )),
           ),
           const SizedBox(height: 10),
-
+          ValueListenableBuilder(
+              valueListenable: chipModified,
+              builder: (context, value, _) {
+                return FutureBuilder<List>(
+                  future: getAllkeys(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Wrap(
+                        spacing: 20.0,
+                        runSpacing: 10.0,
+                        children: [
+                          for (var preset in snapshot.data!)
+                            InputChip(
+                              labelPadding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
+                              label: Text(
+                                preset,
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                              padding: const EdgeInsets.all(6.0),
+                              backgroundColor: const Color(0xffd2eaec),
+                              onSelected: (_selected) async {
+                                List varList = await getVarList(preset);
+                                setState(() {
+                                  dose = double.tryParse(varList[0]);
+                                  rate = double.tryParse(varList[1]);
+                                  _ctlRate.text = (varList[1] == 'null') ? '' : varList[1];
+                                  isWeight = (varList[2] == "1") ? true : false;
+                                  weight = double.tryParse(varList[3]);
+                                  _ctlWeight.text = (varList[3] == 'null') ? '' : varList[3];
+                                  cVol = double.tryParse(varList[4]);
+                                  _ctlCVol.text = (varList[4] == 'null') ? '' : varList[4];
+                                  cDose = double.tryParse(varList[5]);
+                                  _ctlCDose.text = (varList[5] == 'null') ? '' : varList[5];
+                                  tInf = double.tryParse(varList[6]);
+                                  valDoseType = varList[7];
+                                  valcDoseType = varList[8];
+                                  valcVolumeType = varList[9];
+                                  valWeightType = varList[10];
+                                  valTimeType = varList[11];
+                                  valRateType = varList[12];
+                                  print ('chip : $varList');
+                                });
+                              },
+                              onDeleted: () async {
+                                final prefs = await SharedPreferences.getInstance();
+                                await prefs.remove(preset);
+                                setState(() {
+                                  chipModified.value++;
+                                });
+                              },
+                            ),
+                        ],
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
+                );
+              }),
         ],
       ),
     );
