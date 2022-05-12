@@ -31,6 +31,7 @@ late dynamic result = '';
 
 void showConc() {
   if (dose == null || rate == null || weight == null || cVol == null) {
+    result = null;
   } else {
     num dosefactor = 1;
     switch (valDoseType) {
@@ -129,7 +130,7 @@ void showConc() {
 
 void showDose() {
   if (rate == null || weight == null || cDose == null || cVol == null) {
-    
+    result = null;
   } else {
     num ratefactor = 1;
     switch (valRateType) {
@@ -223,6 +224,7 @@ void showDose() {
 
 void showRate() {
   if (dose == null || weight == null || cDose == null || cVol == null) {
+    result = null;
   } else {
     // Convert dose to mg
     num dosefactor = 1;
@@ -337,33 +339,11 @@ void initAll(TextEditingController c1, c2, c3, c4) {
   c4.clear();
 }
 
-class PresetItem {
-  String? presetName;
-  List<String>? varList;
-
-  PresetItem(this.presetName, this.varList);
-
-  void savePreset(PresetItem presetItem) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(presetItem.presetName!, presetItem.varList!);
-  }
-
-  void loadPreset(PresetItem presetItem) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.getStringList(presetItem.presetName!);
-  }
-}
-
 Future<List<String>> getAllkeys() async {
   final prefs = await SharedPreferences.getInstance();
-  // prefs.reload();
-  // final keys = prefs.getKeys();
-  // final prefsMap = <String, dynamic>{};
-  // for (String key in keys) {
-  //   prefsMap[key] = prefs.get(key);
-  // }
   return prefs.getKeys().toList();
 }
+
 var allKeys = getAllkeys();
 
 Future<List> getVarList(key) async {
@@ -374,4 +354,26 @@ Future<List> getVarList(key) async {
 
 ValueNotifier<int> chipModified = ValueNotifier<int>(0);
 
+void addVarList(varList) {
+  varList.add(dose.toString()); //0
+  varList.add(rate.toString()); //1
+  varList.add(isWeight ? "1" : "0"); //2
+  varList.add(weight.toString()); //3
+  varList.add(cVol.toString()); //4
+  varList.add(cDose.toString()); //5
+  varList.add(tInf.toString()); //6
+  varList.add(valDoseType.toString()); //7
+  varList.add(valcDoseType.toString()); //8
+  varList.add(valcVolumeType.toString()); //9
+  varList.add(valWeightType.toString()); //10
+  varList.add(valTimeType.toString()); //11
+  varList.add(valRateType.toString()); //12
+}
 
+double? nullChkValue(TextEditingController txtctl) {
+  if (txtctl.text == '' || txtctl.text == 'null') {
+    return null;
+  } else {
+    return double.tryParse(txtctl.text);
+  }
+}

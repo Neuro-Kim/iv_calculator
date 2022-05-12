@@ -23,42 +23,34 @@ class _ScrDoseState extends State<ScrDose> {
   void initState() {
     super.initState();
 
-    _ctlRate.addListener(() {
-      if (_ctlRate.text == '' || _ctlRate.text == 'null') {
-        rate = null;
-      } else {
-        rate = double.parse(_ctlRate.text);
+    _ctlRate.addListener(
+      () {
+        rate = nullChkValue(_ctlRate);
         showDose();
         setState(() {});
-      }
-    });
-    _ctlWeight.addListener(() {
-      if (_ctlWeight.text == '' || _ctlWeight.text == 'null') {
-        weight = null;
-      } else {
-        weight = double.parse(_ctlWeight.text);
+      },
+    );
+    _ctlWeight.addListener(
+      () {
+        weight = nullChkValue(_ctlWeight);
         showDose();
         setState(() {});
-      }
-    });
-    _ctlCDose.addListener(() {
-      if (_ctlCDose.text == '' || _ctlCDose.text == 'null') {
-        cDose = null;
-      } else {
-        cDose = double.parse(_ctlCDose.text);
+      },
+    );
+    _ctlCDose.addListener(
+      () {
+        cDose = nullChkValue(_ctlCDose);
         showDose();
         setState(() {});
-      }
-    });
-    _ctlCVol.addListener(() {
-      if (_ctlCVol.text == '' || _ctlCVol.text == 'null') {
-        cVol = null;
-      } else {
-        cVol = double.parse(_ctlCVol.text);
+      },
+    );
+    _ctlCVol.addListener(
+      () {
+        cVol = nullChkValue(_ctlCVol);
         showDose();
         setState(() {});
-      }
-    });
+      },
+    );
   }
 
   @override
@@ -387,14 +379,10 @@ class _ScrDoseState extends State<ScrDose> {
                                 setState(() {
                                   dose = double.tryParse(varList[0]);
                                   rate = double.tryParse(varList[1]);
-                                  _ctlRate.text = (varList[1] == 'null') ? '' : varList[1];
                                   isWeight = (varList[2] == "1") ? true : false;
                                   weight = double.tryParse(varList[3]);
-                                  _ctlWeight.text = (varList[3] == 'null') ? '' : varList[3];
                                   cVol = double.tryParse(varList[4]);
-                                  _ctlCVol.text = (varList[4] == 'null') ? '' : varList[4];
                                   cDose = double.tryParse(varList[5]);
-                                  _ctlCDose.text = (varList[5] == 'null') ? '' : varList[5];
                                   tInf = double.tryParse(varList[6]);
                                   valDoseType = varList[7];
                                   valcDoseType = varList[8];
@@ -402,6 +390,11 @@ class _ScrDoseState extends State<ScrDose> {
                                   valWeightType = varList[10];
                                   valTimeType = varList[11];
                                   valRateType = varList[12];
+                                  _ctlRate.text = (varList[1] == 'null') ? '' : varList[1];
+                                  _ctlWeight.text = (varList[3] == 'null') ? '' : varList[3];
+                                  _ctlCVol.text = (varList[4] == 'null') ? '' : varList[4];
+                                  _ctlCDose.text = (varList[5] == 'null') ? '' : varList[5];
+                                  showDose();
                                 });
                               },
                               onDeleted: () async {

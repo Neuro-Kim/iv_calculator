@@ -23,42 +23,38 @@ class _ScrIvRateState extends State<ScrIvRate> {
   void initState() {
     super.initState();
 
-    _ctlDose.addListener(() {
-      if (_ctlDose.text == '' || _ctlDose.text == 'null') {
-        dose = null;
-      } else {
-        dose = double.tryParse(_ctlDose.text);
-        showRate();
-        setState(() {});
-      }
-    });
-    _ctlWeight.addListener(() {
-      if (_ctlWeight.text == '' || _ctlWeight.text == 'null') {
-        weight = null;
-      } else {
-        weight = double.tryParse(_ctlWeight.text);
-        showRate();
-        setState(() {});
-      }
-    });
-    _ctlCDose.addListener(() {
-      if (_ctlCDose.text == '' || _ctlCDose.text == 'null') {
-        cDose = null;
-      } else {
-        cDose = double.tryParse(_ctlCDose.text);
-        showRate();
-        setState(() {});
-      }
-    });
-    _ctlCVol.addListener(() {
-      if (_ctlCVol.text == '' || _ctlCVol.text == 'null') {
-        cVol = null;
-      } else {
-        cVol = double.tryParse(_ctlCVol.text);
-        showRate();
-        setState(() {});
-      }
-    });
+    _ctlDose.addListener(
+      () {
+        dose = nullChkValue(_ctlDose);
+        setState(() {
+          showRate();
+        });
+      },
+    );
+    _ctlWeight.addListener(
+      () {
+        weight = nullChkValue(_ctlWeight);
+        setState(() {
+          showRate();
+        });
+      },
+    );
+    _ctlCDose.addListener(
+      () {
+        cDose = nullChkValue(_ctlCDose);
+        setState(() {
+          showRate();
+        });
+      },
+    );
+    _ctlCVol.addListener(
+      () {
+        cVol = nullChkValue(_ctlCVol);
+        setState(() {
+          showRate();
+        });
+      },
+    );
   }
 
   @override
@@ -81,7 +77,7 @@ class _ScrIvRateState extends State<ScrIvRate> {
         children: [
           Row(
             children: [
-              const SizedBox(width: 100),
+              const SizedBox(width: 10),
               Expanded(
                 child: TextFormField(
                   controller: _ctlDose,
@@ -96,6 +92,13 @@ class _ScrIvRateState extends State<ScrIvRate> {
                   },
                 ),
               ),
+              const SizedBox(width: 10),
+              // DropDown(
+              //   typeVal: valDoseType,
+              //   type: doseType,
+              //   callback: showRate,
+              // ),
+
               DropdownButton(
                   value: valDoseType,
                   icon: const Icon(Icons.keyboard_arrow_down),
@@ -111,6 +114,7 @@ class _ScrIvRateState extends State<ScrIvRate> {
                     showRate();
                     setState(() {});
                   }),
+
               isWeight
                   ? const Text(
                       ' / kg / ',
@@ -148,7 +152,7 @@ class _ScrIvRateState extends State<ScrIvRate> {
           ),
           Row(
             children: [
-              const SizedBox(width: 20),
+              // const SizedBox(width: 10),
               Switch(
                 activeColor: const Color(0xff067a82),
                 value: isWeight,
@@ -167,7 +171,7 @@ class _ScrIvRateState extends State<ScrIvRate> {
                   setState(() {});
                 },
               ),
-              const SizedBox(width: 20),
+              const SizedBox(width: 10),
               Expanded(
                 child: TextFormField(
                   controller: _ctlWeight,
@@ -184,6 +188,7 @@ class _ScrIvRateState extends State<ScrIvRate> {
                   focusNode: _fcNodeWt,
                 ),
               ),
+              const SizedBox(width: 10),
               DropdownButton(
                 value: valWeightType,
                 underline: const SizedBox(),
@@ -200,7 +205,7 @@ class _ScrIvRateState extends State<ScrIvRate> {
                   setState(() {});
                 },
               ),
-              const SizedBox(width: 105),
+              //const SizedBox(width: 50),
             ],
           ),
           const SizedBox(height: 30),
@@ -381,16 +386,13 @@ class _ScrIvRateState extends State<ScrIvRate> {
                               onSelected: (_selected) async {
                                 List varList = await getVarList(preset);
                                 setState(() {
+
                                   dose = double.tryParse(varList[0]);
-                                  _ctlDose.text = (varList[0] == 'null') ? '' : varList[0];
                                   rate = double.tryParse(varList[1]);
                                   isWeight = (varList[2] == "1") ? true : false;
                                   weight = double.tryParse(varList[3]);
-                                  _ctlWeight.text = (varList[3] == 'null') ? '' : varList[3];
                                   cVol = double.tryParse(varList[4]);
-                                  _ctlCVol.text = (varList[4] == 'null') ? '' : varList[4];
                                   cDose = double.tryParse(varList[5]);
-                                  _ctlCDose.text = (varList[5] == 'null') ? '' : varList[5];
                                   tInf = double.tryParse(varList[6]);
                                   valDoseType = varList[7];
                                   valcDoseType = varList[8];
@@ -398,6 +400,11 @@ class _ScrIvRateState extends State<ScrIvRate> {
                                   valWeightType = varList[10];
                                   valTimeType = varList[11];
                                   valRateType = varList[12];
+                                  _ctlDose.text = (varList[0] == 'null') ? '' : varList[0];
+                                  _ctlWeight.text = (varList[3] == 'null') ? '' : varList[3];
+                                  _ctlCVol.text = (varList[4] == 'null') ? '' : varList[4];
+                                  _ctlCDose.text = (varList[5] == 'null') ? '' : varList[5];
+                                  showRate();
                                 });
                               },
                               onDeleted: () async {

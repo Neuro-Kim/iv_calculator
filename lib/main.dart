@@ -4,10 +4,10 @@ import 'Screen/Rate_screen.dart';
 import 'Screen/Dose_screen.dart';
 import 'Screen/Conc_screen.dart';
 import 'model.dart';
-
+import 'dart:developer' as dev;
 
 void main() async {
-  //final prefs = await SharedPreferences.getInstance();
+  dev.log('main');
   getAllkeys();
   runApp(const MyApp());
 }
@@ -21,7 +21,21 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'IV calculator',
       theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.teal,
+        ).copyWith(
+          secondary: Colors.blue,
+        ),
+        textTheme: const TextTheme(
+          bodyText1: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+          ),
+          bodyText2: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+          ),
+        ),
       ),
       home: const MyHomePage(title: 'IV calculator'),
     );
@@ -103,52 +117,36 @@ class _MyHomePageState extends State<MyHomePage> {
                   controller: _ctlChip,
                 ),
                 actions: [
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.cancel_outlined),
-                    style: ElevatedButton.styleFrom(primary: Colors.blue),
+                  ElevatedButton(
+                    child: const Text('Cancel'),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blue,
+                    ),
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    label: const Text('Cancel'),
                   ),
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.check_circle_outline),
-                    style: ElevatedButton.styleFrom(primary: Colors.blue),
+                  ElevatedButton(
+                    child: const Text('OK'),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blue,
+                    ),
                     onPressed: () async {
                       final prefs = await SharedPreferences.getInstance();
                       List<String>? varList = [];
-                      varList.add(dose.toString());//0
-                      varList.add(rate.toString());//1
-                      varList.add(isWeight ? "1" : "0");//2
-                      varList.add(weight.toString());//3
-                      varList.add(cVol.toString());//4
-                      varList.add(cDose.toString());//5
-                      varList.add(tInf.toString());//6
-                      varList.add(valDoseType.toString());//7
-                      varList.add(valcDoseType.toString());//8
-                      varList.add(valcVolumeType.toString());//9
-                      varList.add(valWeightType.toString());//10
-                      varList.add(valTimeType.toString());//11
-                      varList.add(valRateType.toString());//12
-
+                      addVarList(varList);
                       await prefs.setStringList(presetTitle, varList);
-                      print ('FAB : $varList');
                       _ctlChip.clear();
-
                       Navigator.pop(context);
 
-                      setState(() {
-                        chipModified.value++ ;
-
-                      });
+                      chipModified.value++;
                     },
-                    label: const Text('OK'),
                   ),
                 ],
               );
             },
           );
-        }, // Add Tag, Add Drug의 2가지
+        },
       ),
     );
   }
